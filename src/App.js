@@ -1,25 +1,30 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.css';
+import Chatbot from './Components/Chatbot';
+import Chatmodule from './Components/Chatmodule';
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <Router>
+      <div id="App" className="App">
+        {/* <Header />   */}
+        {/* <SideBar pageWrapId={"page-wrap"} outerContainerId={"App"} /> */}
+        {/* <div id="page-wrap"> */}
+        <div className="container d-flex align-items-center flex-column">
+          <Switch>
+            <Route path="/" exact={true}>
+              <Chatbot />
+            </Route>
+            <Route path="/chatmodule" exact={true}>
+              <Chatmodule />
+            </Route>
+          </Switch>
+        </div>
+      </div>
+    </Router>
   );
 }
 

@@ -1,15 +1,14 @@
 import React, { Component } from "react";
-import './Chatbot.css'
 
-class Chatbot extends Component{
+class Chatmodule extends Component{
 
     render(){
         return(
             <div className="container">
-                <p>this is chat application</p>
+                <p>this is chat module</p>
             </div>
         )
     }
 }
 
-export default Chatbot
+export default Chatmodule
