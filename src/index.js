@@ -3,10 +3,11 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import Chatbot from './Components/Chatbot'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Chatbot />
   </React.StrictMode>,
   document.getElementById('root')
 );
