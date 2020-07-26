@@ -468,7 +468,62 @@ body {font-family: Arial, Helvetica, sans-serif;}
 			</div>
 <script>
     $('#logout').click(function () {
-        // function for session end
+	const proxyurl = "https://cors-anywhere.herokuapp.com/";
+	var poolData = {
+		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
+		ClientId: '4p0jkrav77l990ontchha5ghog', // Your client id here
+	};
+
+	var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+	var cognitoUser = userPool.getCurrentUser();
+
+	if (cognitoUser != null) {
+	cognitoUser.getSession(function(err, session) {
+		if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+		}
+		console.log('session validity: ' + session.isValid());
+
+		cognitoUser.getUserAttributes(function(err, attributes) {
+			if (err) {
+
+			} else {
+
+			}
+		});
+
+
+	});
+	
+	data={'id': localStorage["id"]};
+	url="https://logout-co4mkmthmq-ue.a.run.app/logout"
+	fetch(proxyurl+url, {
+		method: 'post',
+		headers: {
+		"Content-type": "application/json",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Credentials":"true"
+		},
+		
+		body: JSON.stringify(data)
+		})
+		.then(function (resp){
+			return resp.text()
+		})
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+			 if(data == "True"){
+		        window.location.replace("login.html");
+            }
+		    else{ return;}
+		})
+		.catch(function (error) {
+		console.log('Request failed', error);
+		});
+	cognitoUser.signOut();
+	
+	}
     });
 </script>
 </body>

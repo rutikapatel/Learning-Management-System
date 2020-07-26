@@ -9,6 +9,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://sdk.amazonaws.com/js/aws-sdk-2.41.0.min.js"></script>
+	<script src="amazon-cognito-identity.min.js"></script>
     <style language="text/css">
         input#wisdom {
             padding: 4px;
@@ -290,7 +291,62 @@ body {font-family: Arial, Helvetica, sans-serif;}
 
 <script>
     $('#logout').click(function () {
-        // function for session end
+	const proxyurl = "https://cors-anywhere.herokuapp.com/";
+	var poolData = {
+		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
+		ClientId: '4p0jkrav77l990ontchha5ghog', // Your client id here
+	};
+
+	var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+	var cognitoUser = userPool.getCurrentUser();
+
+	if (cognitoUser != null) {
+	cognitoUser.getSession(function(err, session) {
+		if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+		}
+		console.log('session validity: ' + session.isValid());
+
+		cognitoUser.getUserAttributes(function(err, attributes) {
+			if (err) {
+
+			} else {
+
+			}
+		});
+
+
+	});
+	
+	data={'id': localStorage["id"]};
+	url="https://logout-co4mkmthmq-ue.a.run.app/logout"
+	fetch(proxyurl+url, {
+		method: 'post',
+		headers: {
+		"Content-type": "application/json",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Credentials":"true"
+		},
+		
+		body: JSON.stringify(data)
+		})
+		.then(function (resp){
+			return resp.text()
+		})
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+			 if(data == "True"){
+		        window.location.replace("login.html");
+            }
+		    else{ return;}
+		})
+		.catch(function (error) {
+		console.log('Request failed', error);
+		});
+	cognitoUser.signOut();
+	
+	}
     });
 </script>
 

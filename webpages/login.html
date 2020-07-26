@@ -124,7 +124,9 @@
 	     $('#confirmButton').click(function (event){
 				event.preventDefault();
                 var answer = $('#answer').val();
-                if(answer === data.answer){
+				console.log(answer)
+				console.log(qa.answer)
+                if(answer === qa.answer){
                     window.alert("Logging Successful");
                     window.location.replace("index.html")
                 }
