@@ -11,20 +11,21 @@
 </head>
 <body>
 <!--navbar-->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <h1><a class="navbar-brand" href="index.html">Learning Management System</a></h1>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-    <div class="navbar-nav">
-      <a class="nav-item nav-link active" href="index.html">Home <span class="sr-only">(current)</span></a>
-      <a class="nav-item nav-link" href="chat.html">Chats</a>
-      <a class="nav-item nav-link" href="fileUpload.html">Files</a>
-      <a class="nav-item nav-link" href="register.html">Sign Up</a>
-    </div>
-  </div>
-</nav>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <h1><a class="navbar-brand" href="index.html">Learning Management System</a></h1>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="index.html">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="chat.html">Chats</a>
+          <a class="nav-item nav-link" href="fileUpload.html">Files</a>
+        </div>
+
+      </div>
+        <button style="float: right" id="logout">Logout</button>
+    </nav>
 
 <div class="container">
     <h2 align="center">File Upload</h2>
@@ -37,6 +38,12 @@
 
     </form>
 </div>
+
+<script>
+    $('#logout').click(function () {
+        // function for session end
+    });
+</script>
 
 </body>
 </html>
