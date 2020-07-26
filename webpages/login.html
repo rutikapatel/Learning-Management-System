@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+	<script src="amazon-cognito-identity.min.js"></script>
 
 </head>
 <body>
@@ -36,7 +37,7 @@
             </div>
             <div class="form-group">
                 <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <input type="password" class="form-control" id="password" placeholder="Password">
             </div>
             <div class="form-group">
                 <small>Not a member ? Please register <a href="register.html">HERE</a></small>
@@ -60,7 +61,9 @@
 
 <script>
       $('#afterLogin').hide();
-      $('#loginButton').click(function () {
+      $('#loginButton').click(function (event) {
+		var qa;
+		event.preventDefault();
         var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
 		var poolData = {
 		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
@@ -68,8 +71,10 @@
 		};
 		var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-		var email = document.getElementById('email').val();
-		var password = document.getElementById('password').val();
+		var email = $('#email').val();
+		var password = $('#password').val();
+		console.log(email);
+		console.log(password);
 
 
 		var authenticationData = {
@@ -91,8 +96,45 @@
             console.log(accessToken);
             localStorage["cognitoUser"] = cognitoUser;
             localStorage["jwt"] = accessToken;
+			data={"id":localStorage["id"]}
+			const proxyurl = "https://cors-anywhere.herokuapp.com/"
+			var url= "https://us-central1-serverlessproject-284414.cloudfunctions.net/getQuestion"
+			fetch(proxyurl+url, {
+		method: 'post',
+		headers: {
+		"Content-type": "application/json",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Credentials":"true"
+		},
+		
+		body: JSON.stringify(data)
+		})
+		.then(function (resp){
+			return resp.json()
+		})
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+			qa=data
+			document.getElementById("question").innerHTML = data.question;
+	
+		})
+		.catch(function (error) {
+		console.log('Request failed', error);
+		});
+	     $('#confirmButton').click(function (event){
+				event.preventDefault();
+                var answer = $('#answer').val();
+                if(answer === data.answer){
+                    window.alert("Logging Successful");
+                    window.location.replace("index.html")
+                }
+                else{
+                    window.alert("Answer doesnot match");
+                }
 
-             var getQuestions = $.ajax({
+            });
+
+            /* var getQuestions = $.ajax({
                 url : "https://us-central1-serverlessproject-284414.cloudfunctions.net/getQuestion",
                 data : {},
                 dataType : 'json',
@@ -107,8 +149,8 @@
             },
             error: function (error) {
             }
-            });
-            var resc = getQuestions.responseJSON;
+            });*/
+       /*     var resc = getQuestions.responseJSON;
             document.getElementById("question").innerHTML = resc.question;
             $('#confirmButton').click(function (){
                 var answer = $('#answer').val();
@@ -120,7 +162,7 @@
                     window.alert("Answer doesnot match");
                 }
 
-            });
+            });*/
 	},
 	onFailure: function(err) {
 		alert(err.message || JSON.stringify(err));

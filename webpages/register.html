@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Register</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
     <script src="amazon-cognito-identity.min.js"></script>
@@ -37,7 +37,7 @@
 
         <div class="form-group">
             <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
+            <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" required>
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
 
@@ -75,10 +75,11 @@
 </div>
 
 <script>
-    $('#registerButton').click(function () {
+    $('#registerButton').click(function (event) {
 
         console.log("in registerbutton");
-
+		const proxyurl = "https://cors-anywhere.herokuapp.com/";
+		event.preventDefault();
         var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
 		var poolData = {
 		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
@@ -119,6 +120,7 @@
 		var organizationName = new AmazonCognitoIdentity.CognitoUserAttribute(dataOrganization);
 		attributeList.push(attributeName);
 		attributeList.push(organizationName);
+		console.log(email)
 		userPool.signUp(email, password, attributeList, null, function(err,result) {
 		if (err) {
 		    console.log(err);
@@ -126,10 +128,42 @@
 		return;
 		}
 		console.log(result);
+		var url= "https://us-central1-serverlessproject-284414.cloudfunctions.net/storeQA"
 		if(result.userConfirmed){
 		    localStorage["id"] = result.userSub;
-		    var storeQuestion = $.ajax({
+			data={'id': result.userSub,'question':question,'answer':answer};
+					fetch(proxyurl+url, {
+		method: 'post',
+		headers: {
+		"Content-type": "application/json",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Credentials":"true"
+		},
+		
+		body: JSON.stringify(data)
+		})
+		.then(function (resp){
+			return resp.text()
+		})
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+			 if(data == "True"){
+		        window.location.replace("login.html");
+            }
+		    else{ return;}
+		})
+		.catch(function (error) {
+		console.log('Request failed', error);
+		});
+		  /*  var storeQuestion = $.ajax({
                 url : "https://us-central1-serverlessproject-284414.cloudfunctions.net/storeQA",
+				headers: {
+				"Content-type": "application/json",
+				"Access-Control-Allow-Origin": "*",
+				"Access-Control-Allow-Credentials":"true",
+				"Access-Control-Request-Headers": "x-requested-with"
+				},
+				crossDomain: true,
                 data : {id: result.userSub,'question':question,'answer':answer},
                 dataType : 'json',
                 type : 'POST',
@@ -149,10 +183,11 @@
 		    if(resc == true){
 		        window.location.replace("login.html");
             }
-		    else{ return;}
+		    else{ return;}*/
 		}
-		});
+		
     });
+	});
 </script>
 </body>
 </html>
