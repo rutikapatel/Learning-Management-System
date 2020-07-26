@@ -7,7 +7,7 @@
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-
+    <script src="amazon-cognito-identity.min.js"></script>
 </head>
 <body>
 <!--navbar-->
@@ -28,31 +28,31 @@
     <div class="container">
         <h2 align="center">Registration Form</h2>
 
-        <form method="post" action="">
+        <form >
 
         <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" placeholder="Enter name">
+            <input type="text" class="form-control" id="name" placeholder="Enter name" required>
         </div>
 
         <div class="form-group">
             <label for="exampleInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" required>
             <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
         </div>
 
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Password">
+            <input type="password" class="form-control" id="password" placeholder="Password" required>
         </div>
 
         <div class="form-group">
             <label for="confirmPassword">Confirm Password</label>
-            <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter Password">
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter Password" required/>
         </div>
         <div class="form-group">
             <label for="organisation">Organisation</label>
-            <input type="text" class="form-control" id="organisation" placeholder="Enter organisation"/>
+            <input type="text" class="form-control" id="organisation" placeholder="Enter organisation" required/>
         </div>
 
         <div class="form-group">
@@ -64,14 +64,95 @@
         </div>
         <div class="form-group">
             <label for="answer">Enter Answer</label>
-            <input type="text" class="form-control" id="answer" placeholder="Enter your answer">
+            <input type="text" class="form-control" id="answer" placeholder="Enter your answer" required>
         </div>
 
         <div class="form-group">
             <small>Already a member ? Please login <a href="login.html">HERE</a></small>
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button class="btn btn-primary" id="registerButton">Submit</button>
     </form>
 </div>
+
+<script>
+    $('#registerButton').click(function () {
+
+        console.log("in registerbutton");
+
+        var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+		var poolData = {
+		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
+		ClientId: '4p0jkrav77l990ontchha5ghog', // Your client id here
+		};
+
+        var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        var name = $('#name').val();
+        var email = $('#email').val();
+        var password = $('#password').val();
+        var confirmPassword = $('#confirmPassword').val();
+        var organisation = $('#organisation').val();
+        var question = $('#question').val();
+        var answer = $('#answer').val();
+        console.log(question);
+
+        //validations
+        if(name === "" || email === "" || password === "" || confirmPassword === "" || question === "" || answer === "") {
+            window.alert("No fields must be empty ");
+        }
+        else {
+            if (password !== confirmPassword) {
+               window.alert("Passwords do not match");
+            }
+        }
+
+        var attributeList = [];
+        var dataName = {
+			Name: 'name',
+			Value: name,
+			};
+		var dataOrganization = {
+			Name: 'custom:organization',
+			Value: organisation,
+			};
+
+		var attributeName = new AmazonCognitoIdentity.CognitoUserAttribute(dataName);
+		var organizationName = new AmazonCognitoIdentity.CognitoUserAttribute(dataOrganization);
+		attributeList.push(attributeName);
+		attributeList.push(organizationName);
+		userPool.signUp(email, password, attributeList, null, function(err,result) {
+		if (err) {
+		    console.log(err);
+		alert(err.message || JSON.stringify(err));
+		return;
+		}
+		console.log(result);
+		if(result.userConfirmed){
+		    localStorage["id"] = result.userSub;
+		    var storeQuestion = $.ajax({
+                url : "https://us-central1-serverlessproject-284414.cloudfunctions.net/storeQA",
+                data : {id: result.userSub,'question':question,'answer':answer},
+                dataType : 'json',
+                type : 'POST',
+                async : false,
+                beforeSend: function (x) {
+                if (x && x.overrideMimeType) {
+                    x.overrideMimeType("application/j-son;charset=UTF-8");
+                }
+            },
+            success: function (response) {
+            },
+            error: function (error) {
+            }
+            });
+		    console.log(storeQuestion.responseJSON.message);
+		    var resc = storeQuestion.responseJSON.message;
+		    if(resc == true){
+		        window.location.replace("login.html");
+            }
+		    else{ return;}
+		}
+		});
+    });
+</script>
 </body>
 </html>

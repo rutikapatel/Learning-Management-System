@@ -41,26 +41,93 @@
             <div class="form-group">
                 <small>Not a member ? Please register <a href="register.html">HERE</a></small>
             </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button  class="btn btn-primary" id="loginButton">Submit</button>
+
         </form>
         <div id = "afterLogin">
          <form method="post" action="">
             <div class="form-group">
-                <h3>Question here</h3>
+                <h3 id="question">Question here</h3>
             </div>
             <div class="form-group">
                 <label for="answer">Answer</label>
                 <input type="answer" class="form-control" id="answer" placeholder="answer">
             </div>
-            <button type="submit" class="btn btn-primary">Confirm</button>
+            <button  class="btn btn-primary" id="confirmButton">Confirm</button>
         </form>
         </div>
 </div>
+
 <script>
-    $('#afterLogin').hide();
+      $('#afterLogin').hide();
+      $('#loginButton').click(function () {
+        var CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+		var poolData = {
+		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
+		ClientId: '4p0jkrav77l990ontchha5ghog', // Your client id here
+		};
+		var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+		var email = document.getElementById('email').val();
+		var password = document.getElementById('password').val();
+
+
+		var authenticationData = {
+			Username: email,
+			Password: password,
+		};
+		var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails(authenticationData);
+		var userData = {
+		Username: email,
+		Pool: userPool,
+		};
+
+		var cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
+
+		cognitoUser.authenticateUser(authenticationDetails, {
+		onSuccess: function(result) {
+            $('#afterLogin').show();
+            var accessToken = result.getAccessToken().getJwtToken();
+            console.log(accessToken);
+            localStorage["cognitoUser"] = cognitoUser;
+            localStorage["jwt"] = accessToken;
+
+             var getQuestions = $.ajax({
+                url : "https://us-central1-serverlessproject-284414.cloudfunctions.net/getQuestion",
+                data : {},
+                dataType : 'json',
+                type : 'POST',
+                async : false,
+                beforeSend: function (x) {
+                if (x && x.overrideMimeType) {
+                    x.overrideMimeType("application/j-son;charset=UTF-8");
+                }
+            },
+            success: function (response) {
+            },
+            error: function (error) {
+            }
+            });
+            var resc = getQuestions.responseJSON;
+            document.getElementById("question").innerHTML = resc.question;
+            $('#confirmButton').click(function (){
+                var answer = $('#answer').val();
+                if(answer === resc.answer){
+                    window.alert("Logging Successful");
+                    window.location.replace("index.html")
+                }
+                else{
+                    window.alert("Answer doesnot match");
+                }
+
+            });
+	},
+	onFailure: function(err) {
+		alert(err.message || JSON.stringify(err));
+	},
+	});
+      });
 </script>
-
-
 
 </body>
 </html>
