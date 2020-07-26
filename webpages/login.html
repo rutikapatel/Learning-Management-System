@@ -91,6 +91,28 @@
 
 		cognitoUser.authenticateUser(authenticationDetails, {
 		onSuccess: function(result) {
+			cognitoUser.getSession(function(err, session) {
+			if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+			}
+			console.log('session validity: ' + session.isValid());
+
+			cognitoUser.getUserAttributes(function(err, attributes) {
+			if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+			} else {
+			console.log("inside attribute")
+			for (i = 0; i < attributes.length; i++) {
+				if(attributes[i].getName()=='sub'){
+					localStorage['id']=attributes[i].getValue();
+				}
+				console.log('attribute ' + attributes[i].getName() + ' has value ' + attributes[i].getValue());
+				}
+			}
+			});
+			});
             $('#afterLogin').show();
             var accessToken = result.getAccessToken().getJwtToken();
             console.log(accessToken);
@@ -128,7 +150,7 @@
 				console.log(qa.answer)
                 if(answer === qa.answer){
                     window.alert("Logging Successful");
-                    window.location.replace("index.html")
+					window.location.replace("index.html")
                 }
                 else{
                     window.alert("Answer doesnot match");
