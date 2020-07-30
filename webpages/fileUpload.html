@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Files</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.41.0.min.js"></script>
+    <style language="text/css">
+        input#wisdom {
+            padding: 4px;
+            font-size: 1em;
+            width: 400px
+        }
+    input::placeholder {
+        color: #ccc;
+        font-style: italic;
+    }
+
+    p.userRequest {
+        margin: 4px;
+        padding: 4px 10px 4px 10px;
+        border-radius: 4px;
+        min-width: 50%;
+        max-width: 85%;
+        float: left;
+        background-color: #7d7;
+    }
+
+    p.lexResponse {
+        margin: 4px;
+        padding: 4px 10px 4px 10px;
+        border-radius: 4px;
+        text-align: right;
+        min-width: 50%;
+        max-width: 85%;
+        float: right;
+        background-color: #bbf;
+        font-style: italic;
+    }
+
+    p.lexError {
+        margin: 4px;
+        padding: 4px 10px 4px 10px;
+        border-radius: 4px;
+        text-align: right;
+        min-width: 50%;
+        max-width: 85%;
+        float: right;
+        background-color: #f77;
+    }
+</style>
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+/* Button used to open the chat form - fixed at the bottom of the page */
+.open-button {
+  background-color: #555;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  opacity: 0.8;
+  position: fixed;
+  bottom: 23px;
+  right: 28px;
+  width: 280px;
+}
+
+/* The popup chat - hidden by default */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  right: 15px;
+  border: 3px solid green;
+  z-index: 9;
+}
+
+/* Add styles to the form container */
+.form-container {
+  max-width: 300px;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width textarea */
+.form-container textarea {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  min-height: 200px;
+}
+
+/* When the textarea gets focus, do something */
+.form-container textarea:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/send button */
+.form-container .btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+.btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:0px;
+  opacity: 0.8;
+}
+/* Add a red background color to the cancel button */
+.form-container .cancel {
+  background-color: red;
+}
+
+.cancel {
+  background-color: red;
+}
+/* Add some hover effects to buttons */
+.form-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}
+</style>
+
+</head>
+<body>
+<!--navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <h1><a class="navbar-brand" href="index.html">Learning Management System</a></h1>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-item nav-link active" href="index.html">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-item nav-link" href="chat.html">Chats</a>
+          <a class="nav-item nav-link" href="fileUpload.html">Files</a>
+        </div>
+
+      </div>
+        <button style="float: right" id="logout">Logout</button>
+    </nav>
+
+<div class="container">
+    <h2 align="center">File Upload</h2>
+    <form method="post" action="https://us-central1-hip-bonito-279820.cloudfunctions.net/data_processing_function" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Choose a file to upload</label>
+            <input type="file" class="form-control" id="file" name="file">
+        </div>
+        <input type="submit" class="btn btn-primary" value="Submit"/>
+    </form>
+</div>
+<div class=""container>
+  <button class="open-button" id="ChatBoxPopUp" onclick="openForm()">Chat</button>
+  
+  <div class="chat-popup" style="background: #f1f1f1;" id="LexChatBot">
+     <h2 style="text-align:  center; background-color: #555;color: white">Chat</h2>
+      <div id="conversation" class="form-container" style="width: 300px; height: 300px; background: #f1f1f1; overflow: scroll"></div>
+      <form id="chatform" onsubmit="return pushChat();">
+          <input type="text" style="width: 250px;float: bottom; margin-left: 25px" id="wisdom" value="" placeholder="I need some help">
+      </form>
+      <br/>
+         <button class="btn cancel" style="text-align: center;  " onclick="closeForm()">Close</button>
+  
+      </div>
+  </div>
+      <script type="text/javascript">
+          // set the focus to the input box
+      document.getElementById("wisdom").focus();
+  
+      // Initialize the Amazon Cognito credentials provider
+      AWS.config.region = 'us-east-1'; // Region
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      // Provide your Pool Id here
+          IdentityPoolId: 'us-east-1:b1bd165b-9744-4828-90f6-ce229f3ebccf',
+      });
+  
+      var lexruntime = new AWS.LexRuntime();
+      var lexUserId = 'chatbot-demo' + Date.now();
+      var sessionAttributes = {};
+  
+      function pushChat() {
+  
+          // if there is text to be sent...
+          var wisdomText = document.getElementById('wisdom');
+          if (wisdomText && wisdomText.value && wisdomText.value.trim().length > 0) {
+  
+              // disable input to show we're sending it
+              var wisdom = wisdomText.value.trim();
+              wisdomText.value = '...';
+              wisdomText.locked = true;
+  
+              // send it to the Lex runtime
+              var params = {
+                  botAlias: '$LATEST',
+                  botName: 'LMSChatBot',
+                  inputText: wisdom,
+                  userId: lexUserId,
+                  sessionAttributes: sessionAttributes
+              };
+              showRequest(wisdom);
+              lexruntime.postText(params, function(err, data) {
+                  if (err) {
+                      console.log(err, err.stack);
+                      showError('Error:  ' + err.message + ' (see console for details)')
+                  }
+                  if (data) {
+                      // capture the sessionAttributes for the next cycle
+                      sessionAttributes = data.sessionAttributes;
+                      // show response and/or error/dialog status
+                      showResponse(data);
+                  }
+                  // re-enable input
+                  wisdomText.value = '';
+                  wisdomText.locked = false;
+              });
+          }
+          // we always cancel form submission
+          return false;
+      }
+  
+      function showRequest(daText) {
+  
+          var conversationDiv = document.getElementById('conversation');
+          var requestPara = document.createElement("P");
+          requestPara.className = 'userRequest';
+          requestPara.appendChild(document.createTextNode(daText));
+          conversationDiv.appendChild(requestPara);
+          conversationDiv.scrollTop = conversationDiv.scrollHeight;
+      }
+  
+      function showError(daText) {
+  
+          var conversationDiv = document.getElementById('conversation');
+          var errorPara = document.createElement("P");
+          errorPara.className = 'lexError';
+          errorPara.appendChild(document.createTextNode(daText));
+          conversationDiv.appendChild(errorPara);
+          conversationDiv.scrollTop = conversationDiv.scrollHeight;
+      }
+  
+      function showResponse(lexResponse) {
+  
+          var conversationDiv = document.getElementById('conversation');
+          var responsePara = document.createElement("P");
+          responsePara.className = 'lexResponse';
+          if (lexResponse.message) {
+              responsePara.appendChild(document.createTextNode(lexResponse.message));
+              responsePara.appendChild(document.createElement('br'));
+          }
+          if (lexResponse.dialogState === 'ReadyForFulfillment') {
+              responsePara.appendChild(document.createTextNode(
+                  'Ready for fulfillment'));
+              // TODO:  show slot values
+          } else {
+              responsePara.appendChild(document.createTextNode(
+                  '(' + lexResponse.dialogState + ')'));
+          }
+          conversationDiv.appendChild(responsePara);
+          conversationDiv.scrollTop = conversationDiv.scrollHeight;
+      }
+  
+  function openForm() {
+    document.getElementById("LexChatBot").style.display = "block";
+    document.getElementById("ChatBoxPopUp").style.display = "none";
+  }
+  
+  function closeForm() {
+    document.getElementById("LexChatBot").style.display = "none";
+    document.getElementById("ChatBoxPopUp").style.display = "block";
+  }
+  </script>
+  </div>
+<script>
+    $('#logout').click(function () {
+	const proxyurl = "https://cors-anywhere.herokuapp.com/";
+	var poolData = {
+		UserPoolId: 'us-east-1_HR8kQoNhm', // Your user pool id here
+		ClientId: '4p0jkrav77l990ontchha5ghog', // Your client id here
+	};
+
+	var userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+	var cognitoUser = userPool.getCurrentUser();
+
+	if (cognitoUser != null) {
+	cognitoUser.getSession(function(err, session) {
+		if (err) {
+			alert(err.message || JSON.stringify(err));
+			return;
+		}
+		console.log('session validity: ' + session.isValid());
+
+		cognitoUser.getUserAttributes(function(err, attributes) {
+			if (err) {
+
+			} else {
+
+			}
+		});
+
+
+	});
+	
+	data={'id': localStorage["id"]};
+	url="https://logout-co4mkmthmq-ue.a.run.app/logout"
+	fetch(proxyurl+url, {
+		method: 'post',
+		headers: {
+		"Content-type": "application/json",
+		"Access-Control-Allow-Origin": "*",
+		"Access-Control-Allow-Credentials":"true"
+		},
+		
+		body: JSON.stringify(data)
+		})
+		.then(function (resp){
+			return resp.text()
+		})
+		.then(function (data) {
+			console.log('Request succeeded with JSON response', data);
+			 if(data == "True"){
+		        window.location.replace("login.html");
+            }
+		    else{ return;}
+		})
+		.catch(function (error) {
+		console.log('Request failed', error);
+		});
+	cognitoUser.signOut();
+	
+	}
+    });
+</script>
+
+</body>
+</html>
