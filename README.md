@@ -24,4 +24,7 @@ Website : It has all the web pages required to run the application.
 
 chatSentimentAnalysis is a lambda function used to perform sentiment analysis of the chat messages. 
 
+Data Processing module is an independent application which use be complied independently 
+to run it use install flask then cd Data_Processing
+python app.py
 
