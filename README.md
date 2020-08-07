@@ -3,9 +3,13 @@ Group 10
 Members 
 
 Jasper Jiao (B00704995) 
+
 Rutika Patel (B00835088) 
+
 Jaspreet Singh (B00840257) 
+
 Prem Kumar Menni (B00843422)
+
 
 Learning Management System (LMS) is a serverless multi-cloud model, with backend-as-a-service (BaaS) developed using Amazon Web Services and Google Cloud Platform.
 
