@@ -109,4 +109,18 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+  <component name="WindowStateProjectService">
+    <state x="242" y="52" key="CommitChangelistDialog2" timestamp="1596768101888">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="242" y="52" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1596768101888" />
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1596768115213">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1596768115213" />
+    <state x="387" y="248" key="git4idea.merge.GitPullDialog" timestamp="1596768108277">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="387" y="248" key="git4idea.merge.GitPullDialog/0.0.1440.900@0.0.1440.900" timestamp="1596768108277" />
+  </component>
 </project>
