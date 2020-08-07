@@ -18,4 +18,6 @@ Pub_sub and online support module has the files related to chat module. It inclu
 
 Website : It has all the web pages required to run the application. 
 
+chatSentimentAnalysis is a lambda function used to perform sentiment analysis of the chat messages. 
+
 
